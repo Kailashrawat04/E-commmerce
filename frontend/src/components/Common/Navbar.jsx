@@ -6,6 +6,7 @@ import {
   HiOutlineBars3BottomRight 
 } from 'react-icons/hi2'; 
 import SearchBar from './SearchBar';
+import CartDrawer from '../Layout/CartDrawer';
 
 
 const Navbar = () => {
@@ -50,7 +51,7 @@ const Navbar = () => {
 
 
         </nav>
-    
+    <CartDrawer/>
     
     </>
   )
