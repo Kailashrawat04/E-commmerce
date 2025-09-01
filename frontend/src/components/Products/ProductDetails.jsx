@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { toast } from "sonner"; // Import Sonner
+import { toast } from "sonner"; 
+import ProductGrid from "./ProductGrid";
 
 const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState("/images/black1.jpg");
@@ -42,8 +43,27 @@ const ProductDetails = () => {
       image: selectedImage,
     };
 
-    // Simulate adding to cart (you can replace this with Redux, Context API, or API call)
-    console.log("Added to cart:", productToCart);
+    // Get existing cart
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Check if item already exists (same id, color, size)
+    const existingIndex = cart.findIndex(
+      (item) =>
+        item.id === productToCart.id &&
+        item.color === productToCart.color &&
+        item.size === productToCart.size
+    );
+
+    if (existingIndex >= 0) {
+      // If exists, update quantity
+      cart[existingIndex].quantity += quantity;
+    } else {
+      // If not, push new item
+      cart.push(productToCart);
+    }
+
+    // Save back
+    localStorage.setItem("cart", JSON.stringify(cart));
 
     // Show success toast
     toast.success(`${productData.name} added to cart!`, {
@@ -61,7 +81,7 @@ const ProductDetails = () => {
               key={index}
               src={img}
               alt="Thumbnail"
-              className={`w-16 h-16 object-cover rounded cursor-pointer border ${
+              className={`w-16 h-16 object-cover rounded cursor-pointer border transition-transform hover:scale-105 ${
                 selectedImage === img ? "border-black" : "border-gray-300"
               }`}
               onClick={() => setSelectedImage(img)}
@@ -71,7 +91,7 @@ const ProductDetails = () => {
         <img
           src={selectedImage}
           alt="Selected"
-          className="w-full max-w-md object-cover rounded-lg"
+          className="w-full max-w-md object-cover rounded-lg fade-in"
         />
       </div>
 
@@ -79,7 +99,7 @@ const ProductDetails = () => {
       <div>
         <h2 className="text-2xl font-semibold">{productData.name}</h2>
         <p className="text-lg font-medium my-2">${productData.price}</p>
-        <p className="text-gray-600">{productData.description}</p>
+        <p className="text-gray-600 leading-relaxed">{productData.description}</p>
 
         {/* Color Options */}
         <div className="mt-4">
@@ -142,6 +162,13 @@ const ProductDetails = () => {
           Add to Cart
         </button>
       </div>
+       <div className="mt-20">
+        <h2 className="text-2xl text-center font-bold mb-4">
+            you may also like</h2>
+            <ProductGrid/>
+         
+
+       </div>
     </div>
   );
 };
