@@ -17,9 +17,16 @@ const NewArrivals = () => {
     { id: 8, name: "Casual Shirt", price: 1299, image: { url: "https://via.placeholder.com/200x200?text=Shirt", alt: "Casual Shirt" } }
   ];
 
+  // Drag / Touch Handlers
   const startDrag = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const startTouch = (e) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft);
     setScrollLeft(scrollRef.current.scrollLeft);
   };
 
@@ -29,19 +36,46 @@ const NewArrivals = () => {
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Scroll speed factor
+    const walk = (x - startX) * 1.5;
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
+  const onTouchMove = (e) => {
+    if (!isDragging) return;
+    const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  // Arrow Navigation
+  const scrollByAmount = (amount) => {
+    scrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  };
+
   return (
-    <section className="overflow-hidden select-none">
-      <div className="container mx-auto text-center mb-6 relative">
+    <section className="overflow-hidden select-none relative">
+      <div className="container mx-auto text-center mb-6">
         <h2 className="text-3xl font-bold mb-2">Explore New Arrivals</h2>
         <p className="text-gray-600 mb-4 text-lg">
           Discover the latest trends in fashion. Stay ahead with our new arrivals that combine style and comfort.
         </p>
       </div>
 
+      {/* Navigation Arrows */}
+      <button
+        onClick={() => scrollByAmount(-300)}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+      >
+        ◀
+      </button>
+      <button
+        onClick={() => scrollByAmount(300)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+      >
+        ▶
+      </button>
+
+      {/* Product Scroll */}
       <div
         ref={scrollRef}
         className="flex gap-4 overflow-x-scroll scroll-smooth no-scrollbar px-4 cursor-grab active:cursor-grabbing"
@@ -49,12 +83,17 @@ const NewArrivals = () => {
         onMouseLeave={stopDrag}
         onMouseUp={stopDrag}
         onMouseMove={onDrag}
+        onTouchStart={startTouch}
+        onTouchEnd={stopDrag}
+        onTouchMove={onTouchMove}
         style={{ WebkitOverflowScrolling: "touch" }}
+        role="list"
       >
         {products.map((product) => (
           <div
             key={product.id}
-            className="min-w-[80%] sm:min-w-[250px] bg-white rounded-2xl shadow-md flex-shrink-0"
+            className="min-w-[200px] sm:min-w-[250px] lg:min-w-[300px] bg-white rounded-2xl shadow-md flex-shrink-0"
+            role="listitem"
           >
             <img
               src={product.image.url}
