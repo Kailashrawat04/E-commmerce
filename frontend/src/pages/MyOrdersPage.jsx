@@ -1,12 +1,14 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const OrdersDashboard = () => {
+  const navigate = useNavigate();
+
   // Mock orders for testing
   const orders = [
     {
       _id: "12345",
-      image: "https://via.placeholder.com/80", // sample product image
+      image: "http://picsum.photos/500/500?random=2",
       createdAt: new Date().toISOString(),
       shippingAddress: { city: "New York", country: "US" },
       items: 2,
@@ -15,7 +17,7 @@ const OrdersDashboard = () => {
     },
     {
       _id: "67890",
-      image: "https://via.placeholder.com/80",
+      image: "http://picsum.photos/500/500?random=1",
       createdAt: new Date().toISOString(),
       shippingAddress: { city: "Delhi", country: "India" },
       items: 1,
@@ -24,7 +26,7 @@ const OrdersDashboard = () => {
     },
     {
       _id: "54321",
-      image: "https://via.placeholder.com/80",
+      image: "http://picsum.photos/500/500?random=4",
       createdAt: new Date().toISOString(),
       shippingAddress: { city: "London", country: "UK" },
       items: 3,
@@ -47,6 +49,10 @@ const OrdersDashboard = () => {
     }
   };
 
+  const handleRowClick = (id) => {
+    navigate(`/order/${id}`);
+  };
+
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">My Orders</h2>
@@ -67,7 +73,8 @@ const OrdersDashboard = () => {
             {orders.map((order) => (
               <tr
                 key={order._id}
-                className="border-b hover:bg-gray-50 transition"
+                onClick={() => handleRowClick(order._id)}
+                className="border-b hover:bg-gray-50 transition cursor-pointer"
               >
                 <td className="px-4 py-2">
                   <img
@@ -83,12 +90,8 @@ const OrdersDashboard = () => {
                 <td className="px-4 py-2">
                   {order.shippingAddress.city}, {order.shippingAddress.country}
                 </td>
-                <td className="px-4 py-2 text-center">
-                  {order.items || 0}
-                </td>
-                <td className="px-4 py-2 font-semibold">
-                  ${order.price || 0}
-                </td>
+                <td className="px-4 py-2 text-center">{order.items || 0}</td>
+                <td className="px-4 py-2 font-semibold">${order.price || 0}</td>
                 <td className="px-4 py-2">
                   <span
                     className={`${getStatusClasses(
